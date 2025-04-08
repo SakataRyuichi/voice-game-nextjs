@@ -7,10 +7,14 @@ interface AudioVisualizerProps {
 export default function AudioVisualizer({ audioLevel }: AudioVisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
+  // クライアントサイドでのみ実行されるようにする
+  const isBrowser = typeof window !== 'undefined';
+  
   // Chrome特化のキャンバスベース可視化
   useEffect(() => {
+    if (!isBrowser || !canvasRef.current) return;
+    
     const canvas = canvasRef.current;
-    if (!canvas) return;
     
     // Chrome最適化: devicePixelRatio対応
     const dpr = window.devicePixelRatio || 1;
@@ -75,7 +79,7 @@ export default function AudioVisualizer({ audioLevel }: AudioVisualizerProps) {
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [audioLevel]);
+  }, [audioLevel, isBrowser]);
   
   return (
     <div className="relative w-64 h-64">

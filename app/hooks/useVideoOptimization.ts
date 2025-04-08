@@ -8,9 +8,12 @@ interface VideoOptimizationProps {
 }
 
 export function useVideoOptimization({ videoRef, src, autoplay = true, preload = 'auto' }: VideoOptimizationProps) {
+  // クライアントサイドでのみ実行されるようにする
+  const isBrowser = typeof window !== 'undefined';
+  
   // Chrome特化のハードウェアアクセラレーション設定
   useEffect(() => {
-    if (!videoRef.current || !src) return;
+    if (!isBrowser || !videoRef.current || !src) return;
     
     const video = videoRef.current;
     
@@ -53,5 +56,5 @@ export function useVideoOptimization({ videoRef, src, autoplay = true, preload =
       video.preload = 'auto';
       video.load(); // 明示的なロード開始
     }
-  }, [videoRef, src, autoplay, preload]);
+  }, [videoRef, src, autoplay, preload, isBrowser]);
 }

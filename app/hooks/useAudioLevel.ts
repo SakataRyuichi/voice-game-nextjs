@@ -8,10 +8,18 @@ export function useAudioLevel(threshold = -40) {
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [microphone, setMicrophone] = useState<MediaStreamAudioSourceNode | null>(null);
   
+  // クライアントサイドでのみ実行されるようにする
+  const isBrowser = typeof window !== 'undefined';
+  
   const startListening = useCallback(async () => {
+    // サーバーサイドでは実行しない
+    if (!isBrowser) return;
+    
     try {
       // Chrome特化のAudioContext設定
-      const context = new AudioContext(config.audioContextOptions as AudioContextOptions);
+      const context = new (window.AudioContext || (window as any).webkitAudioContext)(
+        config.audioContextOptions as AudioContextOptions
+      );
       
       // Chrome特化のAnalyserNode設定
       const analyserNode = context.createAnalyser();
@@ -63,9 +71,11 @@ export function useAudioLevel(threshold = -40) {
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
-  }, [threshold]);
+  }, [threshold, isBrowser]);
   
   const stopListening = useCallback(() => {
+    if (!isBrowser) return;
+    
     if (microphone && audioContext) {
       microphone.disconnect();
       audioContext.close();
@@ -73,13 +83,15 @@ export function useAudioLevel(threshold = -40) {
       setAudioContext(null);
       setAnalyser(null);
     }
-  }, [microphone, audioContext]);
+  }, [microphone, audioContext, isBrowser]);
   
   useEffect(() => {
+    if (!isBrowser) return;
+    
     return () => {
       stopListening();
     };
-  }, [stopListening]);
+  }, [stopListening, isBrowser]);
   
   return { audioLevel, isAboveThreshold, startListening, stopListening };
 }
