@@ -4,6 +4,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Voice Game - インタラクティブ音声ゲーム',
   description: '音声入力でプレイする抽選ゲーム',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
