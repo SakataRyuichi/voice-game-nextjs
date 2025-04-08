@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "build:local": "cross-env NEXT_PUBLIC_ENV=local next build",
-    "build:amplify": "cross-env NEXT_PUBLIC_ENV=amplify next build && next export"
+    "build:amplify": "cross-env NEXT_PUBLIC_ENV=amplify next build && next export",
+    "clean": "rm -rf .next node_modules",
+    "reinstall": "pnpm clean && pnpm install"
   },
   "dependencies": {
+    "@swc/helpers": "0.5.6",
     "framer-motion": "^10.16.4",
     "next": "^14.0.0",
     "react": "^18.2.0",
@@ -25,8 +28,12 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.47.0",
     "eslint-config-next": "^14.0.0",
+    "file-loader": "^6.2.0",
     "postcss": "^8.4.28",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2"
+  },
+  "resolutions": {
+    "@swc/helpers": "0.5.6"
   }
 }
