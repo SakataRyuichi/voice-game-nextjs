@@ -3,6 +3,7 @@ import { useGameStore } from '../store/gameStore';
 import { useAudioLevel } from '../hooks/useAudioLevel';
 import { useVideoOptimization } from '../hooks/useVideoOptimization';
 import { determineResult } from '../lib/utils/lottery';
+import { initializeMediaSession } from '../utils/mediaSession';
 import AudioVisualizer from './AudioVisualizer';
 import { motion } from 'framer-motion';
 
@@ -38,6 +39,13 @@ export default function Game() {
   
   // クライアントサイドでのみ実行されるようにする
   const isBrowser = typeof window !== 'undefined';
+  
+  // MediaSession APIの初期化
+  useEffect(() => {
+    if (isBrowser) {
+      initializeMediaSession();
+    }
+  }, [isBrowser]);
   
   // Chrome特化の動画最適化
   const videoPath = currentVideo ? `/videos/${currentVideo}` : '';
