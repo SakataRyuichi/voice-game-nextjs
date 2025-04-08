@@ -36,6 +36,9 @@ export default function Game() {
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   
+  // クライアントサイドでのみ実行されるようにする
+  const isBrowser = typeof window !== 'undefined';
+  
   // Chrome特化の動画最適化
   const videoPath = currentVideo ? `/videos/${currentVideo}` : '';
   useVideoOptimization({ 
@@ -46,6 +49,8 @@ export default function Game() {
   
   // ゲーム状態に応じた処理
   useEffect(() => {
+    if (!isBrowser) return; // サーバーサイドでは実行しない
+    
     if (gameState === 'listening') {
       startListening();
       
@@ -75,7 +80,7 @@ export default function Game() {
       
       return () => clearTimeout(timer);
     }
-  }, [gameState, isAboveThreshold, startListening, stopListening, setGameState, setResult, resetGame]);
+  }, [gameState, isAboveThreshold, startListening, stopListening, setGameState, setResult, resetGame, isBrowser]);
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-900 text-white">
@@ -126,12 +131,14 @@ export default function Game() {
       {/* 結果表示 */}
       {gameState === 'result' && currentVideo && (
         <div className="w-full max-w-4xl aspect-video relative">
-          <video
-            ref={videoRef}
-            className="w-full h-full rounded-lg object-cover"
-            playsInline
-            onEnded={() => resetGame()}
-          />
+          {isBrowser && (
+            <video
+              ref={videoRef}
+              className="w-full h-full rounded-lg object-cover"
+              playsInline
+              onEnded={() => resetGame()}
+            />
+          )}
           
           {result && (
             <motion.div
